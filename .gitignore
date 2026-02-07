@@ -34,3 +34,5 @@ target/
 /.idea/
 /.dayroll/
 /.env
+
+.DS_Store
