@@ -1,19 +1,27 @@
+use log::{error, info};
 use crate::model::Candidate;
 
 #[cfg(target_os = "linux")]
 mod linux;
 
+#[cfg(target_os = "macos")]
+mod macos;
+
 pub trait DiscoveryProvider {
     fn discover_default(&self) -> anyhow::Result<Vec<Candidate>> {
+        error!("Detecting on crackkkoss2!");
         #[cfg(target_os = "linux")]
         {
-            linux::LinuxDiscovery::default().discover()
+            return linux::LinuxDiscovery::default().discover();
         }
 
-        #[cfg(not(target_os = "linux"))]
+        #[cfg(target_os = "macos")]
         {
-            Ok(Vec::new())
+            error!("Detecting on crackkkoss!");
+            return macos::MacDiscovery::default().discover();
         }
+
+        Ok(Vec::new())
     }
 }
 

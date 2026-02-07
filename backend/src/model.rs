@@ -1,7 +1,8 @@
 #[derive(Debug, Clone)]
 pub enum Transport {
-    UsbLp { path: String },
+    UsbLp { path: String }, // linux support only
     Serial { path: String },
+    UsbDevice { vid: u16, pid: u16, serial: Option<String> },
 }
 
 #[derive(Debug, Clone)]
@@ -20,6 +21,7 @@ impl Candidate {
         match &self.transport {
             Transport::UsbLp { path } => Some(path.as_str()),
             Transport::Serial { path } => Some(path.as_str()),
+            Transport::UsbDevice { .. } => None,
         }
     }
 }

@@ -8,7 +8,7 @@ use escpos::printer::Printer;
 use escpos::printer_options::PrinterOptions;
 use escpos::utils::{DebugMode, JustifyMode, Protocol, RealTimeStatusRequest, RealTimeStatusResponse, UnderlineMode};
 use serde_json::{Value, json};
-use log::info;
+use log::{error, info};
 use serde::Serialize;
 use crate::discover::{DefaultDiscovery, DiscoveryProvider};
 
@@ -28,15 +28,18 @@ async fn integrations() -> Json<Value> {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let path = Path::new("/dev/usb/lp1");
-    let driver = FileDriver::open(&path)?;
-    //let driver = ConsoleDriver::open(true);
-    let mut printer = Printer::new(driver.clone(), Protocol::default(), Some(PrinterOptions::default()));
+    env_logger::init();
+    //let path = Path::new("/dev/usb/lp1");
+    //let driver = FileDriver::open(&path)?;
 
 
     let command = std::env::args().nth(1).expect("No command given");
+    error!("Lets do this!");
     if command == "print" {
-        info!("Printing!");
+        error!("Printing!");
+        let driver = ConsoleDriver::open(true);
+        let mut printer = Printer::new(driver.clone(), Protocol::default(), Some(PrinterOptions::default()));
+
         printer
             .debug_mode(Some(DebugMode::Dec))
             .init()?
@@ -62,20 +65,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("{:#?}", p);
         }
     } else if command == "status" {
-        printer
-            .debug_mode(Some(DebugMode::Dec))
-            .real_time_status(RealTimeStatusRequest::Printer)?
-            .real_time_status(RealTimeStatusRequest::RollPaperSensor)?
-            .send_status()?;
-
-        let mut buf = [0; 1];
-        driver.read(&mut buf)?;
-
-        let status = RealTimeStatusResponse::parse(RealTimeStatusRequest::Printer, buf[0])?;
-        println!(
-            "Printer online: {}",
-            status.get(&RealTimeStatusResponse::Online).unwrap_or(&false)
-        );
+        // printer
+        //     .debug_mode(Some(DebugMode::Dec))
+        //     .real_time_status(RealTimeStatusRequest::Printer)?
+        //     .real_time_status(RealTimeStatusRequest::RollPaperSensor)?
+        //     .send_status()?;
+        //
+        // let mut buf = [0; 1];
+        // driver.read(&mut buf)?;
+        //
+        // let status = RealTimeStatusResponse::parse(RealTimeStatusRequest::Printer, buf[0])?;
+        // println!(
+        //     "Printer online: {}",
+        //     status.get(&RealTimeStatusResponse::Online).unwrap_or(&false)
+        // );
     }
     // let app = Router::new()
     //     .route("/", get(|| async { "Root get request!" }))

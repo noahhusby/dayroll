@@ -4,8 +4,10 @@ version = "0.1.0"
 edition = "2024"
 
 [features]
-default = ["linux-udev"]
+default = ["mac-serial", "mac-usb"]
 linux-udev = ["dep:udev"]
+mac-serial = ["dep:serialport"]
+mac-usb = ["dep:rusb"]
 
 [dependencies]
 axum = "0.8.7"
@@ -20,7 +22,11 @@ log = "0.4.29"
 serde = { version = "1.0.228", features = ["derive"] }
 anyhow = "1.0.100"
 glob = "0.3.3"
+env_logger = "0.11.8"
 
 [target.'cfg(target_os = "linux")'.dependencies]
 udev = { version = "0.9.3", optional = true }
-glob = "0.3.3"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+serialport = { version = "4", optional = true }
+rusb = { version = "0.9", optional = true }
