@@ -94,9 +94,13 @@ fn enrich_with_udev(cands: &mut [Candidate]) -> Result<()> {
 
     for cand in cands.iter_mut() {
         // Only device-node transports have a path we can match in udev.
-        let Some(devnode) = cand.transport_path() else { continue };
+        let Some(devnode) = cand.transport_path() else {
+            continue;
+        };
 
-        let Some(props) = devmap.get(devnode) else { continue };
+        let Some(props) = devmap.get(devnode) else {
+            continue;
+        };
 
         // Friendly vendor/model names
         let vendor = props
@@ -114,8 +118,8 @@ fn enrich_with_udev(cands: &mut [Candidate]) -> Result<()> {
                 vendor.clone().unwrap_or_default(),
                 model.clone().unwrap_or_default()
             )
-                .trim()
-                .to_string();
+            .trim()
+            .to_string();
             if !mm.is_empty() {
                 cand.make_model = Some(mm);
                 cand.confidence = cand.confidence.max(55);
@@ -141,7 +145,8 @@ fn enrich_with_udev(cands: &mut [Candidate]) -> Result<()> {
             // Usually includes ":0701" for printer interface class/subclass.
             if ifaces.contains(":0701") || ifaces.contains(":0700") || ifaces.contains(":07") {
                 cand.confidence = cand.confidence.max(90);
-                cand.notes.push("udev: ID_USB_INTERFACES indicates USB printer class (07)".into());
+                cand.notes
+                    .push("udev: ID_USB_INTERFACES indicates USB printer class (07)".into());
             }
         }
 
@@ -154,7 +159,8 @@ fn enrich_with_udev(cands: &mut [Candidate]) -> Result<()> {
             ] {
                 if mm_l.contains(kw) {
                     cand.confidence = cand.confidence.max(70);
-                    cand.notes.push(format!("make/model contains keyword '{kw}'"));
+                    cand.notes
+                        .push(format!("make/model contains keyword '{kw}'"));
                     break;
                 }
             }
@@ -187,7 +193,9 @@ fn build_udev_devnode_map() -> Result<HashMap<String, HashMap<String, String>>> 
 
         let mut props = HashMap::new();
         for p in dev.properties() {
-            let Some(name) = p.name().to_str() else { continue };
+            let Some(name) = p.name().to_str() else {
+                continue;
+            };
             let val = p.value().to_string_lossy().to_string();
             props.insert(name.to_string(), val);
         }

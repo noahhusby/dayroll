@@ -1,13 +1,12 @@
 use anyhow::Result;
-use std::env;
 use diesel::{Connection, SqliteConnection};
+use std::env;
 
 pub fn establish_connection() -> Result<SqliteConnection> {
     let database_url = env::var("DATABASE_URL")?;
     let conn = SqliteConnection::establish(&database_url)?;
     Ok(conn)
 }
-
 
 pub async fn run_blocking_db<T, F>(f: F) -> Result<T>
 where
@@ -18,5 +17,5 @@ where
         let mut conn = establish_connection()?;
         f(&mut conn)
     })
-        .await?
+    .await?
 }
