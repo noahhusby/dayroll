@@ -4,6 +4,7 @@ mod config;
 mod state;
 mod routes;
 mod app;
+mod db;
 
 use std::path::Path;
 use axum::{Json, Router};
