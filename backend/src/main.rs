@@ -1,20 +1,22 @@
-mod model;
-mod discover;
-mod config;
-mod state;
-mod routes;
 mod app;
+mod config;
 mod db;
+mod discover;
+mod model;
+mod routes;
+mod state;
 
-use std::path::Path;
+use crate::discover::{DefaultDiscovery, DiscoveryProvider};
 use axum::{Json, Router};
-use escpos::driver::{FileDriver};
+use escpos::driver::FileDriver;
 use escpos::printer::Printer;
 use escpos::printer_options::PrinterOptions;
-use escpos::utils::{DebugMode, JustifyMode, Protocol, RealTimeStatusRequest, RealTimeStatusResponse, UnderlineMode};
-use serde_json::{Value, json};
+use escpos::utils::{
+    DebugMode, JustifyMode, Protocol, RealTimeStatusRequest, RealTimeStatusResponse, UnderlineMode,
+};
 use log::info;
-use crate::discover::{DefaultDiscovery, DiscoveryProvider};
+use serde_json::{Value, json};
+use std::path::Path;
 
 async fn integrations() -> Json<Value> {
     Json(json!({
@@ -36,7 +38,11 @@ async fn pmenu() -> Result<(), Box<dyn std::error::Error>> {
 
     let command = std::env::args().nth(1).expect("No command given");
     let driver = FileDriver::open(&path)?;
-    let mut printer = Printer::new(driver.clone(), Protocol::default(), Some(PrinterOptions::default()));
+    let mut printer = Printer::new(
+        driver.clone(),
+        Protocol::default(),
+        Some(PrinterOptions::default()),
+    );
     if command == "print" {
         info!("Printing!");
         printer
@@ -56,7 +62,7 @@ async fn pmenu() -> Result<(), Box<dyn std::error::Error>> {
             .underline(UnderlineMode::None)?
             .size(2, 3)?
             .writeln("Hello world - Normal")?
-            .print_cut()?;  // print() or print_cut() is mandatory to send the data to the printer
+            .print_cut()?; // print() or print_cut() is mandatory to send the data to the printer
     } else if command == "detect" {
         let provider = DefaultDiscovery::default();
         let printers = provider.discover_default()?;

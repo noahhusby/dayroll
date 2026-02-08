@@ -1,10 +1,10 @@
-use axum::{extract::State, routing::get, Json, Router};
-use axum::http::StatusCode;
-use axum::response::IntoResponse;
-use diesel::RunQueryDsl;
-use serde::Serialize;
 use crate::db;
 use crate::state::AppState;
+use axum::http::StatusCode;
+use axum::response::IntoResponse;
+use axum::{Json, Router, extract::State, routing::get};
+use diesel::RunQueryDsl;
+use serde::Serialize;
 
 #[derive(Serialize)]
 struct HealthResponse {
@@ -21,8 +21,11 @@ async fn get_health(State(state): State<AppState>) -> Json<HealthResponse> {
         diesel::sql_query("SELECT 1").execute(conn)?;
         Ok::<(), anyhow::Error>(())
     })
-        .await
-        .is_ok();
+    .await
+    .is_ok();
 
-    Json(HealthResponse { status: "ok", db: if db_ok { "ok" } else { "down" } })
+    Json(HealthResponse {
+        status: "ok",
+        db: if db_ok { "ok" } else { "down" },
+    })
 }
