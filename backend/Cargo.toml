@@ -9,7 +9,7 @@ linux-udev = ["dep:udev"]
 
 [dependencies]
 axum = "0.8.7"
-diesel = { version = "2.3.4", features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
+diesel = { version = "2.3.6", features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
 dotenvy = "0.15.7"
 escpos = { version = "0.17.0", features = ["barcodes", "codes_2d", "graphics", "ui"] }
 icalendar = "0.17.5"
